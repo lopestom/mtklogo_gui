@@ -19,7 +19,7 @@ A better way to contribute — if you wish to update the GUI — is to modify th
 > Be careful not to confuse the mtklogo_gui.AppImage files with the mtklogo_gui source code files!
 
 - You can open the `mtklogo_i18n.py` file and *`TRANSLATE`* corresponding to your language;
-- You can use the example below. Observe the English messages on the left-hand line up to the `:` symbol and translate them into your language in the message on the right – paying attention to extra encoding symbols such as `\n`; `{ }` and `PID` which should not be translated or removed during translation.
+- You can use the example below. Observe the English messages on the left-hand line up to the `:` symbol and translate them into your language in the message on the right – paying attention to extra encoding symbols such as `\n`; `{ }` and `PID` which should not be translated/removed during translation.
 ```yml
     "your_language_code": {
           "Original mtklogo source code binary": "TRANSLATE",
