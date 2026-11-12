@@ -9,20 +9,22 @@
 chmod +x mtklogo-gui-1.2-x86_64.AppImage
 ./mtklogo-gui-1.2-x86_64.AppImage
 ```
-* On the first run it creates `~home/mtklogo-gui/original/` and `~home/mtklogo-gui/suggested/` (with a `logo.bin` of **example**). Everything the script generates 
-(`logo/`, `out/`, `backup/`) is in these folders. Use **Choose logo.bin…** to bring yours.
-* No FUSE (`libfuse2`)? `./mtklogo-gui-1.2-x86_64.AppImage --appimage-extract-and-run`
+* On the first run it creates
+  - `~home/mtklogo-gui/` with a `logo.bin` file to test, `mtklogos.sh` script file, `mtklogo` binary file, `mtklogo.yaml` profile and 
+  - `~home/mtklogo-gui/lang/` with all `*.sh` labguages files.
+* Everything the script generates (`logo/`, `out/`, `backup/`) is in these folders. Use **Choose logo.bin…** to bring and use yours.
+
+* No FUSE (`libfuse2`)? `./mtklogo-gui-1.5-x86_64.AppImage --appimage-extract-and-run`
 * Requires glibc ≥ 2.34 (Ubuntu 22.04+, Debian 12+, Fedora 35+, Arch…) because of the `mtklogo` binary. Qt/xcb are built-in.
 
 > [!NOTE]  
-> A folder named `~home/mtklogo-gui` is created with two other subfolders `~home/mtklogo-gui/sugerido` and `~home/mtklogo-gui/original`.
-> Set your selection to `original` or `suggested` so that each subfolder contains the png files from your logo.bin file, located in `~home/mtklogo-gui/sugerido/logo` and `~home/mtklogo-gui/original/logo`.
+> A folder named `~home/mtklogo-gui` is created and `unpack` process create the subfolder `~home/mtklogo-gui/logo` that contains the png files from your logo.bin file.
 >
 > It is in this `/logo` subfolder that you should place your modified png images or modify the png images directly in this subfolder.
 >
 > <details><summary> Example - Click to open</summary>
 > <p>
-> <img width="982" height="375" alt="6" src="https://github.com/user-attachments/assets/98037276-cba4-435f-8a82-17fb62a6a423" />
+>  
 > </p>
 > </details>
 
