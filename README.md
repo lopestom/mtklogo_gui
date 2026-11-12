@@ -83,7 +83,7 @@ The real objective of contributing will be improvements in making the mtklogo bi
 For more details read first the [CONTRIBUTING.md](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.5/CONTRIBUTING.md) file before send a PR or any modifications.
 
 ## Authors
-This project would not have been possible without the mtklogo binary file created by @arlept and the modifications/improvements (upstream v1.0.1) made by @cyberknight777.
+This project would not have been possible without the [mtklogo binary](https://github.com/lopestom/mtklogo_gui/tree/mtklogo_sc_v0.1.2) file created by @arlept and the modifications/improvements ([upstream v1.0.1](https://github.com/lopestom/mtklogo/tree/mtklogo_v1.0.1)) made by @cyberknight777.
 
 ### Collaborators
 - @Rusikxxx for translation into the Russian language.
