@@ -80,10 +80,10 @@ If you wish to submit a patch/fix from elsewhere (another project, idea, etc.), 
 ## Contributing
 The real objective of contributing will be improvements in making the mtklogo binary file simpler, better, smaller and adding more resolutions or new resolutions/sizes/dimensions/colors to correctly decompress the `logo.bin` file.
 
-For more details read first the [CONTRIBUTING.md](https://github.com/lopestom/mtklogo/blob/mtklogo_v1.2/CONTRIBUTING.md) file before send a PR or any modifications.
+For more details read first the [CONTRIBUTING.md](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.5/CONTRIBUTING.md) file before send a PR or any modifications.
 
 ## Authors
-This project would not have been possible without the mtklogo binary file created by @arlept and the modifications/improvements (suggested option) made by @cyberknight777.
+This project would not have been possible without the mtklogo binary file created by @arlept and the modifications/improvements (upstream v1.0.1) made by @cyberknight777.
 
 ### Collaborators
 - @Rusikxxx for translation into the Russian language.
