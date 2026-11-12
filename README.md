@@ -53,15 +53,15 @@ The script runs **exactly as is** (`bash ./mtklogos.sh`): the GUI only captures 
 ## To do
 If you wish to submit a patch/fix from elsewhere (another project, idea, etc.), it is imperative that you retain ownership of the work of the person you wish to include. This will ensure that credit is given where it is deserved and that [open source principles](http://opensource.org/docs/osd) are respected. Your contribution to the project will still be acknowledged, as you will be permanently listed as a committer.
 
-Read [suggestions-not-applied](https://github.com/lopestom/mtklogo/blob/mtklogo_2026/ANALYSIS_AND_SUGGESTIONS.md#suggestions-not-applied) for more ideas and to avoid duplication, or to save time on new ways to contribute.
+Read [suggestions-not-applied](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.1/ANALYSIS_AND_SUGGESTIONS.md#suggestions-not-applied) for more ideas and to avoid duplication, or to save time on new ways to contribute.
 
 ### Analysis and suggestions from claude.ai
-You can read [mtklogo_gui_Claude-AI_prompt.md](https://github.com/lopestom/mtklogo/blob/mtklogo_2026/mtklogo_gui_Claude-AI_prompt.md) and [ANALYSIS_AND_SUGGESTIONS.md](https://github.com/lopestom/mtklogo/blob/mtklogo_2026/ANALYSIS_AND_SUGGESTIONS.md) if you want.
+You can read [mtklogo_gui_Claude-AI_prompt.md](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.1/mtklogo_gui_Claude-AI_prompt.md) and [ANALYSIS_AND_SUGGESTIONS.md](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.1/ANALYSIS_AND_SUGGESTIONS.md) if you want.
 
 ## Contributing
 The real objective of contributing will be improvements in making the mtklogo binary file simpler, better, smaller and adding more resolutions or new resolutions/sizes/dimensions/colors to correctly decompress the `logo.bin` file.
 
-For more details read first the [CONTRIBUTING.md](https://github.com/lopestom/mtklogo/blob/mtklogo_2026/CONTRIBUTING.md) file before send a PR or any modifications.
+For more details read first the [CONTRIBUTING.md](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.1/CONTRIBUTING.md) file before send a PR or any modifications.
 
 ## Authors
 This project would not have been possible without the mtklogo binary file created by @arlept and the modifications/improvements (suggested option) made by @cyberknight777.
