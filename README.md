@@ -51,7 +51,7 @@ MTKLOGO_GUI_LANG=de ./mtklogo-gui-1.2-x86_64.AppImage
 >
 > So now all multilingual users can add more languages ​​if they wish.
 
- * You can read [mtklogo_gui_Claude-AI_prompt2](https://github.com/lopestom/mtklogo/blob/mtklogo_v1.2/mtklogo_gui_Claude-AI_prompt2.md) to understand how to add more languages ​​and, if possible, contribute to the project.
+ * You can read [mtklogo_gui_Claude-AI_prompt2](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.2/mtklogo_gui_Claude-AI_prompt2.md) to understand how to add more languages ​​and, if possible, contribute to the project.
  
 ## Content
 
@@ -105,15 +105,15 @@ MTKLOGO_GUI_LANG=de ./mtklogo-gui-1.2-x86_64.AppImage
 ## To do
 If you wish to submit a patch/fix from elsewhere (another project, idea, etc.), it is imperative that you retain ownership of the work of the person you wish to include. This will ensure that credit is given where it is deserved and that [open source principles](http://opensource.org/docs/osd) are respected. Your contribution to the project will still be acknowledged, as you will be permanently listed as a committer.
 
-Read [suggestions-not-applied](https://github.com/lopestom/mtklogo/blob/mtklogo_v1.2/ANALYSIS_AND_SUGGESTIONS.md#suggestions-not-applied) for more ideas and to avoid duplication, or to save time on new ways to contribute.
+Read [suggestions-not-applied](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.2/ANALYSIS_AND_SUGGESTIONS.md#suggestions-not-applied) for more ideas and to avoid duplication, or to save time on new ways to contribute.
 
 ### Analysis and suggestions from claude.ai
-You can read [ANALYSIS_AND_SUGGESTIONS.md](https://github.com/lopestom/mtklogo/blob/mtklogo_v1.2/ANALYSIS_AND_SUGGESTIONS.md) if you want.
+You can read [ANALYSIS_AND_SUGGESTIONS.md](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.2/ANALYSIS_AND_SUGGESTIONS.md) if you want.
 
 ## Contributing
 The real objective of contributing will be improvements in making the mtklogo binary file simpler, better, smaller and adding more resolutions or new resolutions/sizes/dimensions/colors to correctly decompress the `logo.bin` file.
 
-For more details read first the [CONTRIBUTING.md](https://github.com/lopestom/mtklogo/blob/mtklogo_v1.2/CONTRIBUTING.md) file before send a PR or any modifications.
+For more details read first the [CONTRIBUTING.md](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.2/CONTRIBUTING.md) file before send a PR or any modifications.
 
 ## Authors
 This project would not have been possible without the mtklogo binary file created by @arlept and the modifications/improvements (suggested option) made by @cyberknight777.
