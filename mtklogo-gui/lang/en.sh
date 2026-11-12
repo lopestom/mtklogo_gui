@@ -64,6 +64,7 @@ M_MENU_5='Repack other logo.bin (other folder)'
 M_MENU_6='List profiles'
 M_MENU_7='Exit'
 M_EXITING='Exiting...'
-M_MULTI='This file holds %s logo images (logo1, logo2...): unpacking all of them, one sub-folder each.'
+M_MULTI='This file holds %s logo internal files (logo1, logo2...): unpacking all of them, one sub-folder each.'
 M_MULTI_RP='Repacking %s images and joining them in container order...'
 M_JOIN_FAIL='Could not join the images.'
+
