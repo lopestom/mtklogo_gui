@@ -1,0 +1,130 @@
+name: Build mtklogo-gui AppImage
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Output AppImage version (e.g. 1.5)'
+        required: true
+        default: '1.5'
+      base:
+        description: 'Base AppImage asset name (from the release)'
+        required: true
+        default: 'mtklogo-gui-1.4-x86_64.AppImage'
+      base_tag:
+        description: 'Release tag containing the base AppImage'
+        required: true
+        default: 'v1.4_AppImage'
+
+env:
+  REPO: lopestom/mtklogo_gui
+  BASE_TAG: ${{ github.event.inputs.base_tag || 'v1.4' }}
+  BASE_APPIMAGE: ${{ github.event.inputs.base || 'mtklogo-gui-1.4-x86_64.AppImage' }}
+  OUTPUT_VERSION: ${{ github.event.inputs.version || '1.5' }}
+
+jobs:
+  build:
+    name: Build mtklogo-gui AppImage ${{ github.event.inputs.version || '1.5' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout mtklogo_v1.5 branch
+        uses: actions/checkout@v4
+        with:
+          ref: mtklogo_v1.5
+          lfs: true
+          fetch-depth: 1
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends squashfs-tools python3
+          echo "--- versions ---"
+          mksquashfs -version | head -n1
+          python3 --version
+          gh --version | head -n1
+
+      - name: Download base AppImage from release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          gh release download "$BASE_TAG" \
+            --repo "$REPO" \
+            --pattern "$BASE_APPIMAGE" \
+            --output "$BASE_APPIMAGE" \
+            --clobber
+          chmod +x "$BASE_APPIMAGE"
+          echo "--- downloaded base AppImage ---"
+          ls -lh "$BASE_APPIMAGE"
+          file "$BASE_APPIMAGE"
+
+      - name: Validate required files
+        run: |
+          set -e
+          test -f "tools/build_appimage.sh" \
+            || { echo "❌ tools/build_appimage.sh not found"; exit 1; }
+          test -f "$BASE_APPIMAGE" \
+            || { echo "❌ Base AppImage not found: $BASE_APPIMAGE"; exit 1; }
+          test -d "package/usr/share" \
+            || { echo "❌ package/usr/share directory missing"; exit 1; }
+          test -d "bin" \
+            || { echo "❌ bin/ directory missing"; exit 1; }
+          chmod +x tools/build_appimage.sh
+
+      - name: Build mtklogo-gui AppImage
+        run: |
+          ./tools/build_appimage.sh "$BASE_APPIMAGE" "$OUTPUT_VERSION"
+
+      - name: Verify generated artifacts
+        run: |
+          OUT="mtklogo-gui-${OUTPUT_VERSION}-x86_64.AppImage"
+          test -f "$OUT"           || { echo "❌ $OUT not generated"; exit 1; }
+          test -f "$OUT.sha256"    || { echo "❌ $OUT.sha256 not generated"; exit 1; }
+          echo "--- artifacts ---"
+          ls -lh "$OUT" "$OUT.sha256"
+          echo "--- checksum ---"
+          cat "$OUT.sha256"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mtklogo-gui-${{ env.OUTPUT_VERSION }}-x86_64
+          path: |
+            mtklogo-gui-${{ env.OUTPUT_VERSION }}-x86_64.AppImage
+            mtklogo-gui-${{ env.OUTPUT_VERSION }}-x86_64.AppImage.sha256
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: mtklogo GUI v${{ env.OUTPUT_VERSION }} — Linux
+          body: |
+            ## mtklogo-gui-${{ env.OUTPUT_VERSION }}-x86_64.AppImage
+
+            Contains: GUI (PySide6), binary engine `mtklogo` 1.1.0,
+            script `mtklogos.sh` v2.2, `logo.bin`, splash/icon
+            and translations (en/fr/de/es/pt/ru).
+
+            **Requires:** Linux distribution.
+
+            **Language:** follows Linux UI language.
+            To force another supported language, open a terminal in the AppImage folder and run:
+
+            ```bash
+            MTKLOGO_GUI_LANG=fr ./mtklogo-gui-${{ env.OUTPUT_VERSION }}-x86_64.AppImage
+            ```
+
+            > [!IMPORTANT]
+            > Compare the downloaded AppImage against the SHA-256 value
+            > shown in the `.sha256` file.
+          files: |
+            mtklogo-gui-${{ env.OUTPUT_VERSION }}-x86_64.AppImage
+            mtklogo-gui-${{ env.OUTPUT_VERSION }}-x86_64.AppImage.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
