@@ -50,8 +50,8 @@ Requires Rust >= 1.85 (edition 2024).
     mtklogo unpack -p 1440x3200 --image all -o out logo.bin   # out/logo1/ and out/logo2/
     mtklogo repack -o logo1.bin out/logo1/*.png
     mtklogo repack -o logo2.bin out/logo2/*.png
-    mtklogo join   -o logo_novo.bin logo1.bin logo2.bin
-    mtklogo split  -o partes logo.bin                         # logo1.bin, logo2.bin
+    mtklogo join   -o logo_new.bin logo1.bin logo2.bin
+    mtklogo split  -o parts logo.bin                         # logo1.bin, logo2.bin
 ```
 
 Without `--image`, `unpack` behaves as before (first image only) and warns that there are more images.
