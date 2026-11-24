@@ -45,7 +45,7 @@ The paths are the same as in your repository, so you can copy over them:
 | `mtklogo.yaml` | `1440x3200` profile with the Android 16 formats, plus the generic profiles |
 | `patches/` | the same changes as patches (`git am`) |
 | `logo_structure.py` | analysis tool (optional) |
-| `LEIA-ME.md` | file table, build, and usage |
+| `README.md` | file table, build, and usage |
 
 Inside `mtklogo_v1.0.1/`, the zip differs from your original branch in exactly 9 files:
 
