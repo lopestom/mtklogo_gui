@@ -22,7 +22,7 @@ A better way to contribute — if you wish to update the GUI — is to modify th
 - You can use the example below. Observe the English messages on the left-hand line up to the `:` symbol and translate them into your language in the message on the right – paying attention to extra encoding symbols such as `\n`; `{ }` and `PID` which should not be translated/removed during translation.
 ```yml
     "your_language_code": {
-          "Original mtklogo source code binary": "TRANSLATE",
+        "Original mtklogo source code binary": "TRANSLATE",
         "Upstream source code binary v1.0.1; improvements and ideas in yaml file": "TRANSLATE",
         "Upstream source code binary v1.1; update, improvements and ideas in yaml file; update source code to the new logo.bin files - Multi-image; Creator and designer of the GUI for mtklogo": "TRANSLATE",
         "OK": "TRANSLATE",
@@ -74,6 +74,10 @@ A better way to contribute — if you wish to update the GUI — is to modify th
         "The script asks for the number of an option:": "TRANSLATE",
         "Failed to send: the script is no longer reading input.": "TRANSLATE",
         "The script is waiting for input:": "TRANSLATE",
+        "Folder not found: {path}": "TRANSLATE",
+        "The script asks for a choice": "TRANSLATE",
+        "No image for '{name}'.": "TRANSLATE",
+        "{n} image(s) found for '{name}'.": "{n} TRANSLATE '{name}'.",
     },
 ```
 Copy all the translated lines to `mtklogo_i18n.py` file in the section after the `    },` symbol from the last language.

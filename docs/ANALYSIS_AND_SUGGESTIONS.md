@@ -1,4 +1,5 @@
 # Analysis and suggestions — mtklogos.sh, mtklogo.yaml and mtklogo
+* New analysis should look in mtklogo_v1.5
 
 Database analyzed: fork `lopestom/mtklogo` (branch `mtklogo_2025_26`) and `cyberknight777/mtklogo` (HEAD `55deb48`, v1.0.1).
 Legend: **[T]** confirmed in real test · **[L]** by reading the code (not reproduced) · ✅ already corrected in the "suggested" files.

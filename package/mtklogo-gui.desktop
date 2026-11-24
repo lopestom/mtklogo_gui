@@ -1,0 +1,20 @@
+[Desktop Entry]
+Type=Application
+Name=mtklogo GUI
+GenericName=MediaTek logo.bin editor
+GenericName[pt]=Editor de logo.bin MediaTek
+GenericName[de]=MediaTek-logo.bin-Editor
+GenericName[es]=Editor de logo.bin de MediaTek
+GenericName[fr]=Éditeur de logo.bin MediaTek
+GenericName[ru]=Редактор logo.bin для MediaTek
+Comment=Graphical front-end for mtklogos.sh (unpack/repack of MTK logo.bin)
+Comment[pt]=Interface gráfica para o mtklogos.sh (unpack/repack de logo.bin MTK)
+Comment[de]=Grafische Oberfläche für mtklogos.sh (Entpacken/Neupacken von MTK-logo.bin)
+Comment[es]=Interfaz gráfica para mtklogos.sh (unpack/repack de logo.bin de MTK)
+Comment[fr]=Interface graphique pour mtklogos.sh (unpack/repack de logo.bin MTK)
+Comment[ru]=Графический интерфейс для mtklogos.sh (распаковка/упаковка MTK logo.bin)
+Exec=AppRun
+Icon=mtklogo-gui
+Terminal=false
+Categories=Utility;Development;
+Keywords=mtk;logo;bootlogo;android;mediatek;
