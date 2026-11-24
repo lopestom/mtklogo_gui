@@ -57,17 +57,21 @@ chmod +x mtklogo-gui-1.5-x86_64.AppImage
 ## Build AppImage
 It reuses Python 3.12 + PySide6 from the base AppImage, correctly re-seeding the version (`APP_VERSION`) and copying all files located in /bin, /package, /assets, and /qt-translations folders.
 
-Note the version 1.2 used by the base AppImage and the version 1.4 that will be updated in the new AppImage file.
+Note the version 1.4 used by the base AppImage and the version 1.5 that will be updated in the new AppImage file.
         `tools/build_appimage.sh mtklogo-gui-1.4-x86_64.AppImage 1.5`      # requires squashfs-tools
 
 ### Using a Linux PC
 1. Place new folders and/or new files in the base folders used for updating;
 2. Open the Terminal;
 3. Paste into the Terminal;
+
    `./tools/build_appimage.sh mtklogo-gui-1.5-x86_64.AppImage 1.6`
+   
    old version= 1.5 --->> new version= 1.6
-4. Wait for compilation;
-5. On the screen, choose the correct option when the message "Run once" appears.
+   
+   You can open build_appimage.sh file to change `OLD="1.4"` to `OLD="1.5"` and `VER="1.5"` to `VER="1.6"` if you want. Two clicks in the build_appimage.sh file to run.
+5. Wait for compilation;
+6. On the screen, choose the correct option when the message "Run once" appears.
 
 Done, the new AppImage mtklogo-gui-1.6-x86_64.AppImage will be updated with the new folder and new files.
 
@@ -93,18 +97,19 @@ MTKLOGO_GUI_LANG=de ./mtklogo-gui-1.5-x86_64.AppImage
 | `logo.bin` | example `logo.bin` file from repository (replace with yours) |
 | `mtklogo.yaml` | profiles (with `exp_*`, generic phone/tablet and Tank 5 A16 sizes and more fixes/profiles) |
 | `assets/` | icons and splash frames, pre-rendered from `iconmtklogo.svg` / `splash_mtklogo.svg` |
-| `tools/build_appimage.sh` | rebuild the AppImage from AppImage 1.4 (base) and this branch |
-| `packaging/mtklogo-gui.desktop` | AppImage shortcut |
-| `packaging/AppRun` | AppImage Run doc |
-| `mtklogo-gui/mtklogo_gui.py`, `mtklogo_i18n.py` | GUI 1.5 (3 commits - includes the HEAD fixes described below) |
-| `docs/binary_engine/mtklogo_v1.1.0_multi_image.md` | Upstream and update of mtklogo with support for logo.bin with multiple files (logo1 + logo2 + ...) |
-| `.github/workflows/build-mtklogo-gui-appimage.yml` | workflow file for using with Actions |
+| `qt-translations/` | Qt's own translations into the languages ​​of de, es, fr, pt, ru |
+| `build_appimage.sh` | rebuild the AppImage from AppImage 1.4 (base) and this branch |
+| `mtklogo-gui.desktop` | AppImage shortcut |
+| `AppRun` | AppImage Run doc |
+| `mtklogo_gui.py`, `mtklogo_i18n.py` | GUI 1.5 (3 commits - includes the HEAD fixes described below) |
+| `mtklogo_v1.1.0_multi_image.md` | Upstream and update of mtklogo with support for logo.bin with multiple files (logo1 + logo2 + ...) |
+| `build-mtklogo-gui-appimage.yml` | workflow file for using with Actions |
 | `languages.md` | Instructions for changing and/or adding languages ​​in the GUI |
 | `CONTRIBUTING.md` | read to contribute to the project |
 | `README.md` | this file containing general update information |
 
 
-To avoid cluttering the README with too much information, some files have been placed in the [doc](https://github.com/lopestom/mtklogo_gui/tree/mtklogo_v1.5/docs) directory. This means that each document addresses a unique aspect applied to both the [mtklogo 1.1.0](https://github.com/lopestom/mtklogo/tree/mtklogo_v1.1.0) binary engine and the GUI. To understand each phase and the studies applied since version 1.3, each document covers a [topic addressing](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.5/docs/AGENTS.md#3.1-repository---analysis) the main idea, implementation, application, testing, and/or a detailed analysis.
+To avoid cluttering the README with too much information, some files have been placed in the [`docs`](https://github.com/lopestom/mtklogo_gui/tree/mtklogo_v1.5/docs) directory. This means that each document addresses a unique aspect applied to both the [mtklogo 1.1.0](https://github.com/lopestom/mtklogo/tree/mtklogo_v1.1.0) binary engine and the GUI. To understand each phase and the studies applied since version 1.3, each document covers a [topic addressing](https://github.com/lopestom/mtklogo_gui/blob/mtklogo_v1.5/docs/AGENTS.md#3.1-repository---analysis) the main idea, implementation, application, testing, and/or a detailed analysis.
 If you're curious to know how it went, read the documents and enjoy.
 
 ### Problems found
@@ -162,7 +167,7 @@ quoted string → `SyntaxError`. Replaced with «Папка…».
 >
 > It is in these subfolders that you should paste your modified png images or modify the png images directly in this subfolder.
 >
-> <details><summary> Example (screenshot of version 1.4 and earlier) - Click to open</summary>
+> <details><summary> Example (screenshot of version 1.4 and later) - Click to open</summary>
 > <p>
 > <img width="1284" height="636" alt="logo1_2_Folders" src="https://github.com/user-attachments/assets/ac8b0c12-f514-418e-a150-6fc619c8fb69" />
 > </p>
