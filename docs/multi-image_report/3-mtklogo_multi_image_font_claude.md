@@ -31,7 +31,7 @@ The tree is clean, `Cargo.lock` already existed in the original, and there are 9
 
 The only difference is `.gitignore`: my test environment overwrote the original with a single `target/` line. That file is not part of the update, so I'm returning the original to the package.
 
-The `mtklogo_multi_image_fonte.zip` package contains the complete and updated engine code, plus the script, the languages, the YAML, and the patches. I compiled from the extracted zip, with an empty build directory: all 15 tests pass, and the `unpack --image all → repack → join` cycle reproduces your `logo_TANK5_A16.bin` byte for byte (1 PNG in `logo1`, 59 in `logo2`).
+The `mtklogo_multi_image_font.zip` package contains the complete and updated engine code, plus the script, the languages, the YAML, and the patches. I compiled from the extracted zip, with an empty build directory: all 15 tests pass, and the `unpack --image all → repack → join` cycle reproduces your `logo_TANK5_A16.bin` byte for byte (1 PNG in `logo1`, 59 in `logo2`).
 
 ### What is in the package
 
@@ -161,7 +161,7 @@ I did not run the AppImage or the binary. The conclusion comes from reading the 
 I updated `logo_structure.py` (v1.2). It now warns when the engine would leave images out. It also gained `--split` and `--join`:
 
 ```bash
-python3 logo_structure.py logo_TANK5_A16.bin --split partes/
+python3 logo_structure.py logo_TANK5_A16.bin --split parts/
 # partes/logo1.bin -> mtklogo reads 1 slot
 # partes/logo2.bin -> mtklogo reads 59 slots (+ 3,787 B of cert)
 ```
@@ -259,7 +259,7 @@ A "little" changed compared to the commands used previously in upstream v1.0.1. 
 | --- | --- |
 | `unpack --image all -o out` | `out/logo1/` with 1 PNG and `out/logo2/` with 59 PNGs, each folder with its own `.mtklogo-meta` |
 | `unpack --image 2 -o out` | only the 59 PNGs of `logo2`, directly in `out/` |
-| `split -o partes` | `partes/logo1.bin` and `partes/logo2.bin`, which are still packed images, not PNGs |
+| `split -o parts` | `parts/logo1.bin` and `parts/logo2.bin`, which are still packed images, not PNGs |
 
 Each part from `split` is a valid `logoN.bin` on its own. That is why the common `unpack` reads `logo2.bin` alone and extracts all the PNG images. For anyone who has the `logo1.bin` and/or `logo2.bin` files, they can unpack each `.bin` file with the old binary without problems.
 
