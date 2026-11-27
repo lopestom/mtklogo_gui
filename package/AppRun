@@ -1,9 +1,0 @@
-#!/bin/bash
-# AppRun of mtklogo GUI
-self="$(readlink -f -- "$0")"
-export APPDIR="${APPDIR:-${self%/*}}"
-export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/opt/python3.12/lib/python3.12/site-packages/PySide6/Qt/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1
-export SSL_CERT_FILE="$APPDIR/opt/_internal/certs.pem"
-export QT_LOGGING_RULES="${QT_LOGGING_RULES:-qt.qpa.*=false}"
-exec "$APPDIR/opt/python3.12/bin/python3.12" "$APPDIR/usr/share/mtklogo_gui.py" "$@"
