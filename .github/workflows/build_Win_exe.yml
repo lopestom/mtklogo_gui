@@ -1,0 +1,383 @@
+# .github/workflows/build-windows-exe.yml
+#
+# Builds mtklogo_v1.5.exe — a self-contained Windows 10/11 single-file application.
+# Builds the Windows single-file GUI from the files present on a specific branch.
+#
+# Triggers
+#   • Push to mtklogo_v1.5 that touches the GUI, the script, the engine source or this workflow.
+#   • Manual dispatch (Actions tab → "Run workflow") — lets you pick whether to publish a Release.
+#
+# Outputs
+#   • Artifact "mtklogo-windows-exe" (every run)         → download from the run's summary page.
+#   • GitHub Release with the .exe attached (tagged runs) → only when the input "release" is true
+#     (manual dispatch) or when a version tag vX.Y[.Z] is pushed.
+#
+# Secrets required for the Release step only: none beyond the automatic GITHUB_TOKEN.
+
+name: Build Win exe
+
+on:
+  push:
+    branches:
+      - mtklogo_v1.5_Win
+    paths:
+      - "mtklogo-gui/**"
+      - "app/**"
+      - ".gitmodules"
+      - "mtklogo_v1.1.0/**"
+      - "windows/**"
+      - ".github/workflows/build_Win_exe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed only for the Release step; write is harmless on artifact-only runs
+
+jobs:
+
+  # ────────────────────────────────────────────────────────────────[...]
+  # 1. Lint + syntax checks (Linux, fast)
+  # ────────────────────────────────────────────────────────────────[...]
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Syntax — GUI Python files
+        run: |
+          python -m py_compile app/mtklogo_gui.py
+          python -m py_compile app/mtklogo_i18n.py
+
+      # English is the intentional fallback in mtklogo_i18n._(). Catalogs are
+      # partial, so do not fail just because a GUI string has no translated entry.
+      - name: Check translation catalog structure
+        run: |
+          python - <<'PY'
+          import importlib.util
+          import sys
+
+          spec = importlib.util.spec_from_file_location("i18n", "app/mtklogo_i18n.py")
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          catalog = module.CATALOG
+          if not isinstance(catalog, dict) or "pt" not in catalog:
+              sys.exit("Invalid translation catalog: expected a CATALOG mapping with a 'pt' catalog")
+          for language, entries in catalog.items():
+              if not isinstance(entries, dict):
+                  sys.exit(f"Invalid catalog for {language!r}: expected a mapping")
+              for source, translated in entries.items():
+                  if not isinstance(source, str) or not isinstance(translated, str):
+                      sys.exit(f"Invalid translation entry in {language!r}: keys and values must be strings")
+          print(f"OK — catalog structure is valid ({len(catalog)} languages)")
+          PY
+
+      - name: Check translation Catalog placeholder consistency
+        run: |
+          python - <<'PY'
+          import importlib.util
+          import string
+          import sys
+
+          spec = importlib.util.spec_from_file_location("i18n", "app/mtklogo_i18n.py")
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          formatter = string.Formatter()
+          errors = []
+          for language, catalog in module.CATALOG.items():
+              if language == "pt":
+                  continue
+              for source, translated in catalog.items():
+                  source_fields = {field for _, field, _, _ in formatter.parse(source) if field}
+                  translated_fields = {field for _, field, _, _ in formatter.parse(translated) if field}
+                  if source_fields != translated_fields:
+                      errors.append(f"[{language}] {source!r}: expected {source_fields}, got {translated_fields}")
+          if errors:
+              print("Placeholder mismatch:\n" + "\n".join(errors))
+              sys.exit(1)
+          print("OK — translation placeholders are consistent")
+          PY
+
+      - name: Bash syntax
+        run: |
+          bash -n mtklogo-gui/mtklogos.sh
+          for f in mtklogo-gui/lang/*.sh; do
+            bash -n "$f" || exit 1
+          done
+
+      - name: Check shell script line endings
+        run: |
+          for f in mtklogo-gui/mtklogos.sh mtklogo-gui/lang/*.sh; do
+            if file "$f" | grep -q CRLF; then
+              echo "CRLF detected in $f"
+              exit 1
+            fi
+          done
+          echo "OK — all shell scripts files use LF"
+
+  # ───────────────────────────────────────────────────────────────[...]
+  # 2. Build mtklogo.exe engine on Windows (native MSVC, no cross-compile)
+  # ───────────────────────────────────────────────────────────────[...]
+  build-engine:
+    name: Build engine (Windows x86-64)
+    needs: lint
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Verify Rust submodule
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "mtklogo_v1.1.0\Cargo.toml")) {
+            throw "Cargo.toml not found in mtklogo_v1.1.0"
+          }
+          if (-not (Test-Path "mtklogo_v1.1.0\Cargo.lock")) {
+            throw "Cargo.lock not found in mtklogo_v1.1.0"
+          }
+
+      - name: Install Rust stable
+        run: rustup toolchain install stable --profile minimal --no-self-update
+
+      - name: Cache Cargo packages and build output
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            mtklogo_v1.1.0/target
+          key: cargo-win-${{ hashFiles('mtklogo_v1.1.0/Cargo.lock') }}
+          restore-keys: cargo-win-
+
+      - name: Build engine
+        # -p mtklogo-cli is REQUIRED: without it Cargo builds only the library
+        run: cargo +stable build --release --locked -p mtklogo-cli
+        working-directory: mtklogo_v1.1.0
+
+      - name: Smoke-test engine
+        run: |
+          $version = .\mtklogo_v1.1.0\target\release\mtklogo.exe --version
+          Write-Host $version
+          if ($version -notmatch "mtklogo 1.1.0") { throw "Unexpected engine version: $version" }
+
+      - name: Upload engine artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mtklogo-engine-win64
+          path: mtklogo_v1.1.0/target/release/mtklogo.exe
+          if-no-files-found: error
+
+  # ───────────────────────────────────────────────────────────────[...]
+  # 3. Package — assemble bundle, prep bash runtime, run PyInstaller
+  # ───────────────────────────────────────────────────────────────[...]
+  package-exe:
+    name: Package mtklogo_v1.5.exe
+    needs: build-engine
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      # Set up Python 3.12
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download engine
+        uses: actions/download-artifact@v4
+        with:
+          name: mtklogo-engine-win64
+          path: windows/bin
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: pip-win-${{ hashFiles('windows/mtklogo_v1.5.spec') }}
+          restore-keys: pip-win-
+
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip PySide6-Essentials pyinstaller
+
+      - name: Stage application files
+        run: |
+          Copy-Item app\mtklogo_gui.py mtklogo-gui\mtklogo_gui.py
+          Copy-Item app\mtklogo_i18n.py mtklogo-gui\mtklogo_i18n.py
+          Copy-Item mtklogo-gui\mtklogos.sh .\mtklogos.sh
+          Copy-Item mtklogo-gui\mtklogo.yaml .\mtklogo.yaml
+          Copy-Item mtklogo-gui\logo.bin .\logo.bin
+          New-Item -ItemType Directory -Force mtklogo-gui\assets | Out-Null
+
+      - name: Assemble application bundle (mtklogo-gui/bundle)
+        # Downloads logo.bin sample from lopestom/mtklogo_gui if not found locally.
+        run: python windows/assemble_bundle.py --engine windows/bin/mtklogo.exe
+
+      - name: Prepare Git-for-Windows bash runtime (mtklogo-gui/git)
+        # Downloads PortableGit (~60 MB) on cache miss; self-tests pipes, $(), sha256sum, find, mktemp.
+        run: python windows/prep_git.py
+
+      - name: Build exe with PyInstaller
+        run: pyinstaller --noconfirm --clean windows/mtklogo_v1.5.spec
+
+      # ── sanity checks before uploading ───────────────────────────────────────
+      - name: Verify exe exists and has sensible size
+        run: |
+          $exe = "dist\mtklogo_v1.5.exe"
+          if (!(Test-Path $exe)) { throw "exe not found: $exe" }
+          $mb = (Get-Item $exe).Length / 1MB
+          Write-Host "size: $([math]::Round($mb, 1)) MB"
+          if ($mb -lt 50) { throw "exe is suspiciously small ($mb MB)" }
+
+      - name: Verify critical contents with archive_viewer
+        # Checks that qwindows.dll (Qt platform plugin) and bash.exe are inside,
+        # and that test-only ICU DLLs and hook_test did NOT slip in.
+        shell: python
+        run: |
+          import subprocess
+          import sys
+
+      - name: Verify critical contents with archive_viewer
+        shell: python
+        run: |
+          import subprocess
+          import sys
+
+          result = subprocess.run(
+              [
+                  sys.executable,
+                  "-m",
+                  "PyInstaller.utils.cliutils.archive_viewer",
+                  "-r",
+                  r"dist\mtklogo_v1.5.exe",
+              ],
+              input="X\nQ\n",
+              capture_output=True,
+              text=True,
+              check=False,
+          )
+
+          content = (result.stdout + result.stderr).lower()
+
+          required = [
+              ("qwindows.dll", "Qt platform plugin"),
+              ("bash.exe", "bash runtime"),
+              ("mtklogos.sh", "main script"),
+              ("mtklogo.exe", "Windows engine"),
+              ("ru.sh", "Russian translation"),
+              ("qtbase_ru.qm", "Russian Qt translation"),
+          ]
+          forbidden = ["hook_test", "icuuc.dll", "icuin.dll", "icudt.dll"]
+
+          ok = True
+
+          for filename, description in required:
+              if filename not in content:
+                  print(f"MISSING in exe: {description} ({filename})")
+                  ok = False
+
+          for item in forbidden:
+              if item in content:
+                  print(f"FORBIDDEN found in exe: {item}")
+                  ok = False
+
+          if ok:
+              print("exe contents OK")
+
+          sys.exit(0 if ok else 1)
+
+      - name: Compute SHA-256
+        run: |
+          $hash = (Get-FileHash dist\mtklogo_v1.5.exe -Algorithm SHA256).Hash.ToLower()
+          "$hash  mtklogo_v1.5.exe" | Out-File -Encoding ascii dist\mtklogo_v1.5.exe.sha256
+          Write-Host "SHA256: $hash"
+
+      - name: Upload exe artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: mtklogo-windows-exe
+          path: |
+            dist/mtklogo_v1.5.exe
+            dist/mtklogo_v1.5.exe.sha256
+          if-no-files-found: error
+
+  # ───────────────────────────────────────────────────────────────[...]
+  # 4. Release — creates a GitHub Release and attaches the exe
+  #    Runs only on a version tag push (v1.5, v1.5.1, …)
+  #    or when "release" is set to true on a manual dispatch.
+  # ───────────────────────────────────────────────────────────────[...]
+  release:
+    name: Create Release
+    needs: package-exe
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download exe artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mtklogo-windows-exe
+          path: dist
+
+      - name: Determine release version tag
+        id: release_tag
+        run: |
+          version=$(grep -oP 'APP_VERSION\s*=\s*"\K[^"]+' app/mtklogo_gui.py)
+          if [ -z "$version" ]; then
+            echo "Could not determine APP_VERSION" >&2
+            exit 1
+          fi
+          tag="v${version}_Win-$(date -u +%Y%m%d)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: mtklogo GUI v1.5 — Windows exe
+          body: |
+           ## mtklogo GUI — Windows 10/11 single-file build
+
+            **`mtklogo_v1.5.exe`** — nothing else to install to run it.
+
+            - Contains
+            GUI (PySide6) - a minimal Git-for-Windows bash runtime,
+            binary engine `mtklogo` 1.1.0, script `mtklogos.sh` v2.2,
+            `logo.bin`, splash/icon and translations (en/fr/de/es/pt/ru).
+
+            - **Requires**
+            Windows 10 version 1703 or later / Windows 11
+            (Qt6 uses the system `icuuc.dll`; no extra install needed).
+
+            - **Language** follows Windows UI language.
+            To force other supported language: open `cmd` in the exe folder and run
+            `set MTKLOGO_GUI_LANG=fr && mtklogo_v1.5.exe`
+
+            > [!IMPORTANT]
+            > The exe file is unsigned; SmartScreen or antivirus may warn — click *More info → Run anyway*.
+            > First launch is 1–3 s slower while the exe extracts itself.
+
+            Verify the download with:
+            ```
+            certutil -hashfile mtklogo_v1.5.exe SHA256
+            ```
+            Compare the result with the indicated `sha256` number right line below.
+
+          files: |
+            dist/mtklogo_v1.5.exe
+            dist/mtklogo_v1.5.exe.sha256
+    # In case want release automatic
+#          draft: true
+#          prerelease: true
+# or in "Run workflow" enable box
+#Create a GitHub Release with this exe?
+# release
